@@ -15,16 +15,26 @@ var spotify = new Spotify(keys.spotify);
 // Node.js file system module for outputting the console log to a text file (named myLog)
 var fs = require("fs");
 
-// Define (1) which API to call, and (2) what to call for
-function getSomeInput() {
+// Node.js request module
+var request = require("request");
+
+// Moment.js module
+var moment = require("moment");
+
+/* RECURSIVE MIXUP
+   Define (1) which API to call, and (2) what to call for
+   function getSomeInput() {
    console.log("🔍🔍🔍 give me some input 🔎🔎🔎");
    console.log("tell me where to search using the following: \n🔭concert-this for concert info\n🔭spotify-this-song for song info\n🔭movie-this for movie info\n🔭do-what-it-says for a '😉random😉' search\n");
    console.log("your search string comes after\noverall, your query has to be like this:\n\n");
    console.log("node liri.js spotify-this-song ")
-   var whichAPI = process.argv.slice(1,1);
-   var getThis = process.argv.slice(2).join(" ");
+*/
+
+// Define (1) which API to call, and (2) what to call for
+   var whichAPI = process.argv.slice(2,3).toString();
+   var getThis = process.argv.slice(3).join(" ").toString();
    switchCalls(whichAPI, getThis);
-}
+//}
 
 /* SWITCH FOR API CALLS */
 function switchCalls(whichAPI, getThis) {
@@ -43,8 +53,7 @@ function switchCalls(whichAPI, getThis) {
          doTheDefault();
       break;
       default:
-         console.log("\n\n🤔🤔🙃 Not sure what you're trying for. Care to try again? 🤔🤔🙃\n\n");
-         getSomeInput();
+         console.log("\n\n  🤔  Not sure what you're trying for. Care to try again?  🤔  \n\n");
    }
 }
 
@@ -52,7 +61,7 @@ function switchCalls(whichAPI, getThis) {
 function concertThis(getThis){
 
    // replace any spaces in the search string so it parses to the http request
-   var getThis = getThis.split(" ").join("%20");
+   var getThis = getThis.split(" ").join("%20"); console.log(getThis);
 
    var queryUrl = "https://rest.bandsintown.com/artists/" + getThis + "/events?app_id=codingbootcamp";
    
@@ -65,19 +74,19 @@ function concertThis(getThis){
            for (var i=0; i<concerts.length; i++) {
 
                // parse concert date object to format spec'd in instructions
-               var concertDate = moment(concerts[i].datetime).format('MM/DD/YYYY');
+               var concertDate = moment(concerts[i].datetime).format('MM/DD/YYYY'); console.log('datetime',concertDate);
 
                // split and put search string back together with spaces
-               var concert = "🎶🎶🎶" + getThis.split("%20").join(" ") + "🎶🎶🎶\n" + concerts[i].venue.name + "\n" + concerts[i].venue.city + "\n" + concertDate + "\n";
+               var concert = "🎶🎶🎶\n" + concerts[i].venue.name + "\n" + concerts[i].venue.city + "\n" + concertDate + "\n\n";
 
                // output to console and .txt file
                console.log(concert);  
-               fs.appendFile("liri_console_log.txt", concert);
+               fs.appendFileSync("liri_console_log.txt", concert);
            }
 
-       } else {
-           console.log('🤔🤔🙃No concert for you (error): ', err);
-       }
+      } else {
+         console.log('🤔🤔🙃No concert for you (error): ', err);
+      }
 
    });
 }
@@ -91,7 +100,7 @@ function spotifyThis(getThis) {
    })
    .then(function(response) {
       console.log(response);
-      fs.appendFile(myLog, response, function(error) {
+      fs.appendFileSync(myLog, response, function(error) {
          if (error) {
             console.log("🙃.txt log fail🙃");
          } else {
@@ -114,7 +123,7 @@ function movieThis(getThis){
       var durrMsg = "🙃If you haven't watched 'Mr. Nobody,' then you should: 'http://www.imdb.com/title/tt0485947/' \nIt's on Netflix!🙃";
       
       console.log(durrMsg);
-      fs.appendFile("liri_console_log.txt", durrMsg);
+      fs.appendFileSync("liri_console_log.txt", durrMsg);
    }
 
    // replace any spaces in the search string so it parses to the http request
@@ -140,7 +149,7 @@ function movieThis(getThis){
 
          // output to console and .txt file
          console.log(movie);  
-         fs.appendFile("liri_console_log.txt", movie);
+         fs.appendFileSync("liri_console_log.txt", movie);
       }
 
       } else {
@@ -163,4 +172,4 @@ function doTheDefault(durrMsg) {
    switchCalls(data[0], data[1]);
 }
 
-getSomeInput();
+// getSomeInput();
