@@ -12,7 +12,7 @@ var Spotify = require('node-spotify-api');
 // Define the API call
 var spotify = new Spotify(keys.spotify);
 
-// Node.js file system module for outputting the console log to a text file (named myLog)
+// Node.js file system module for outputting the console log to a text file (liri_console_log.txt)
 var fs = require("fs");
 
 // Node.js request module
@@ -21,24 +21,17 @@ var request = require("request");
 // Moment.js module
 var moment = require("moment");
 
-/* RECURSIVE MIXUP
-   Define (1) which API to call, and (2) what to call for
-   function getSomeInput() {
-   console.log("🔍🔍🔍 give me some input 🔎🔎🔎");
-   console.log("tell me where to search using the following: \n🔭concert-this for concert info\n🔭spotify-this-song for song info\n🔭movie-this for movie info\n🔭do-what-it-says for a '😉random😉' search\n");
-   console.log("your search string comes after\noverall, your query has to be like this:\n\n");
-   console.log("node liri.js spotify-this-song ")
-*/
-
 // Define (1) which API to call, and (2) what to call for
-   var whichAPI = process.argv.slice(2,3).toString();
-   var getThis = process.argv.slice(3).join(" ").toString();
-   switchCalls(whichAPI, getThis);
-//}
+var whichAPI = process.argv.slice(2,3).toString();
+var getThis = process.argv.slice(3).join(" ").toString();
+
+// Send user input to switch
+switchCalls(whichAPI, getThis);
 
 /* SWITCH FOR API CALLS */
 function switchCalls(whichAPI, getThis) {
 
+   // NOTE: One should do error handing at input, before switch, except, project instructions were clear in that this program has limited error handling; program is written as specified.
    switch(whichAPI) {
       case 'concert-this':
          concertThis(getThis);
@@ -53,7 +46,7 @@ function switchCalls(whichAPI, getThis) {
          doTheDefault();
       break;
       default:
-         console.log("\n\n  🤔  Not sure what you're trying for. Care to try again?  🤔  \n\n");
+         console.log("\n\n  🤔  Not sure what you're trying for. Typo, maybe? Care to try again?  🤔  \n\n");
    }
 }
 
@@ -85,7 +78,7 @@ function concertThis(getThis){
            }
 
       } else {
-         console.log('🤔🤔🙃No concert for you (error): ', err);
+         return console.log('🤔🤔❕No concert for you (error): ', err);
       }
 
    });
@@ -93,83 +86,112 @@ function concertThis(getThis){
 
 /* SPOTIFY */
 function spotifyThis(getThis) {
+
+   // no song error handling
+   if (getThis === undefined) {
+      getThis = "I Want it That Way";
+      console.log("You didn't tell me what song to search for. I'm guessing you wanted it that way?");
+   }
+
+   // spotify search with object return
    spotify
    .search({
       type: 'track', 
       query: getThis 
    })
    .then(function(response) {
-      console.log(response);
-      fs.appendFileSync(myLog, response, function(error) {
-         if (error) {
-            console.log("🙃.txt log fail🙃");
-         } else {
-            console.log("😂.txt log success😂");
-         }
-      });
+
+      var myLog = "liri_console_log.txt";
+      var songs = response.tracks.items;
+
+      for (var i=0; i<songs.length; i++) {
+
+         var song = songs[i];
+         var entry = "🍉 " +
+                     song.name + "\n" +
+                     song.preview_url + "\n" +
+                     song.album.name + "\n" +
+                     song.artists[0].name + "\n\n";
+
+         // console logging results and writing to .txt
+         console.log(entry);
+         fs.appendFileSync(myLog, entry, function(error) {
+            if (error) {
+               return console.log("🙃" + " .txt log fail " + "🙃");
+            }
+         });
+      }
    })
+   // call error handling
    .catch(function(err) {
-      console.log("🙃error in API call: ", err);
+      return console.log("❕❕❕ Error in API call: ", err);
    });
 }
 
 /* MOVIE */
 function movieThis(getThis){
 
-   // if case was movieThis but no movie was spec'd, do Mr. Nobody
+   // no movie in getThis error handling
    if (getThis === undefined) {
 
-      getThis = "Mr.%20Nobody";
+      getThis = "Mr. Nobody";
       var durrMsg = "🙃If you haven't watched 'Mr. Nobody,' then you should: 'http://www.imdb.com/title/tt0485947/' \nIt's on Netflix!🙃";
       
       console.log(durrMsg);
       fs.appendFileSync("liri_console_log.txt", durrMsg);
    }
 
-   // replace any spaces in the search string so it parses to the http request
+   // replace any spaces in the search string
    var getThis = getThis.split(" ").join("%20");
 
    var queryUrl = "http://www.omdbapi.com/?t=" + getThis + "&y=&plot=short&apikey=trilogy";
 
+   // call
    request(queryUrl, function(err, response, body) {
-
+      
+      // if no errors then proceed
       if (!err && response.statusCode === 200) {
 
-      var movies = JSON.parse(body);
-
-      for (var i=0; i<movies.length; i++) {
+         var movie = JSON.parse(body);
 
          // get Rotten Tomatoes rating
-         var rottenRating = movies[i].Ratings.find(function(thing) {
+         var rottenRating = movie.Ratings.find(function(thing) {
             return thing.Source === "Rotten Tomatoes";
          }).Value;
 
-         // split and put search string back together with spaces
-         var movie = "🎞️🎞️🎞️" + getThis.split("%20").join(" ") + "🎞️🎞️🎞️\n" + movies[i].Title + "\n" + movies[i].Year + "\n" + movies[i].imdbRating + "\n" + rottenRating + "\n" + movies[i].Country + "\n" + movies[i].Language + "\n" + movies[i].Plot + "\n" + movies[i].Actors
+         // log and write to .txt
+         var movie = "🎞️" + " " +
+               movie.Title + "\n" + "Released: " +
+               movie.Released + "\n" + "Rated: " +
+               movie.Rated + "\n" + "RottenRating: " +
+               rottenRating + "\n" + "Country: " +
+               movie.Country + "\n" + "Language(s): " +
+               movie.Language + "\n" + "Plot: " +
+               movie.Plot + "\n" + "Actors: " +
+               movie.Actors;
 
          // output to console and .txt file
          console.log(movie);  
          fs.appendFileSync("liri_console_log.txt", movie);
-      }
-
+      
+      // request error handling
       } else {
-         console.log('🤔🤔🙃No movie for you (error): ', err);
+         console.log('🤔' + 'No movie for you (error): ', err);
       }
 
    });
 }
 
 /* DEFAULT CASE FOR API SWITCH */
-function doTheDefault(durrMsg) {
-
-   // get 'random' text from 'random.txt' file (Mr. Nobody)
-   fs.readFile('random.txt', (err, data) => {
-      if (err) throw err;
-      console.log("🙃Error: ", data, "!🙃");
+function doTheDefault() {
+   
+   // get 'random' text from 'random.txt' file (spotify-this-song,I Want it That Way)
+   fs.readFile('random.txt', 'UTF-8', function(error, data) {
+      if (error) {
+         return console.log("❕Error reading random.txt❕: ", error, "❕🙃");
+      } else {
+         var splitsville = data.toString().split(","); console.log(splitsville);
+         switchCalls(splitsville[0], splitsville[1]);
+      }
    });
-   console.log(durrMsg);
-   data = data.split(",");
-   switchCalls(data[0], data[1]);
 }
-
-// getSomeInput();
