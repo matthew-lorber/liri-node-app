@@ -2,7 +2,7 @@
 
 ## Overview
 
-LIRI is like iPhone's SIRI; however, while SIRI is a speech interpretation and recognition interface, LIRI is a _language_ interpretation and recognition interface. That is, LIRI is a command line node app that takes in parameters and gives you back data it fetches from APIs. LIRI will search: Spotify for songs; Bands in Town for concerts; and OMDB for movies.
+LIRI is like iPhone's SIRI; however, while SIRI is a speech interpretation and recognition interface, LIRI is a **language** interpretation and recognition interface. That is, LIRI is a command line node app that takes in parameters and gives you back data it fetches from APIs. LIRI will: search Spotify for songs; search Bands in Town for concerts; and search OMDB for movies.
 
 ## Technology
 
