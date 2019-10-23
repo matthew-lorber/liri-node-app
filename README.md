@@ -2,17 +2,17 @@
 
 ## Overview
 
-LIRI ([video here](https://matthew-lorber.github.io/liri-node-app/)) is like iPhone's SIRI; however, while SIRI is a speech interpretation and recognition interface, LIRI is a **language** interpretation and recognition interface. That is, LIRI is a command line node app that takes in parameters and gives you back data it fetches from APIs. LIRI will: search Spotify for songs; search Bands in Town for concerts; and search OMDB for movies.
+[LIRI](https://matthew-lorber.github.io/liri-node-app/) is like iPhone's SIRI; however, while SIRI is a speech interpretation and recognition interface, LIRI is a **language** interpretation and recognition interface. That is, LIRI is a command line node app that takes in parameters and gives you back data it fetches from APIs. LIRI will: search Spotify for songs; search Bands in Town for concerts; and search OMDB for movies.
 
 ## Technology
 
-    * [Node.js](https://nodejs.org)
-    * [Node-Spotify-API](https://www.npmjs.com/package/node-spotify-api)
-    * [Axios](https://www.npmjs.com/package/axios)
-    * [OMDB API](http://www.omdbapi.com)
-    * [Bands In Town API](http://www.artists.bandsintown.com/bandsintown-api)
-    * [Moment](https://www.npmjs.com/package/moment)
-    * [DotEnv](https://www.npmjs.com/package/dotenv)
+* [Node.js](https://nodejs.org)
+* [Node-Spotify-API](https://www.npmjs.com/package/node-spotify-api)
+* [Axios](https://www.npmjs.com/package/axios)
+* [OMDB API](http://www.omdbapi.com)
+* [Bands In Town API](http://www.artists.bandsintown.com/bandsintown-api)
+* [Moment](https://www.npmjs.com/package/moment)
+* [DotEnv](https://www.npmjs.com/package/dotenv)
    
 ## How to Use
 
@@ -37,7 +37,7 @@ If you can't see the video here, download the raw (liriBotTest.mp4) from the rep
 
 <video controls src="liriBotTest.mp4" width="640" height="480" alt="liriBotTest.mp4"></video>
 
-### How to Install
+## How to Install
 
 ### Instructions
 
