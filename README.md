@@ -33,7 +33,8 @@ Example:
 
 ## Video
 
-### If you can't see the video here, download the raw (liriBotTest.mp4) from the repo, to watch.
+If you can't see the video here, download the raw (liriBotTest.mp4) from the repo, to watch.
+
 <video controls src="liriBotTest.mp4" width="640" height="480" alt="liriBotTest.mp4"></video>
 
 ### How to Install
