@@ -2,7 +2,7 @@
 
 ## Overview
 
-LIRI is like iPhone's SIRI; however, while SIRI is a speech interpretation and recognition interface, LIRI is a **language** interpretation and recognition interface. That is, LIRI is a command line node app that takes in parameters and gives you back data it fetches from APIs. LIRI will: search Spotify for songs; search Bands in Town for concerts; and search OMDB for movies.
+LIRI ([video here](matthew-lorber.github.io/liri-node-app)) is like iPhone's SIRI; however, while SIRI is a speech interpretation and recognition interface, LIRI is a **language** interpretation and recognition interface. That is, LIRI is a command line node app that takes in parameters and gives you back data it fetches from APIs. LIRI will: search Spotify for songs; search Bands in Town for concerts; and search OMDB for movies.
 
 ## Technology
 
@@ -33,7 +33,7 @@ Example:
 
 ## Video
 
-If you can't see the video here, download the raw (liriBotTest.mp4) from the repo, to watch.
+If you can't see the video here, download the raw (liriBotTest.mp4) from the repo, or view the published README at matthew-lorber.github.io/liri-node-app.
 
 <video controls src="liriBotTest.mp4" width="640" height="480" alt="liriBotTest.mp4"></video>
 
