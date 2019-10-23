@@ -14,7 +14,7 @@ This project was part of the [Rutgers Full Stack Web Development Bootcamp](https
 What makes your project stand out?
 
 ## Screenshots & Video
-Include logo/demo screenshot etc.
+<iframe src="assets/images/sample_vid.mp4" width="640" height="480"></iframe>
 
 ## Code Example
 Show what your project does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.

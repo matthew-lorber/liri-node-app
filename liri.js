@@ -1,92 +1,166 @@
-// Read and set environment variables
+/* Node.js API CALLs WITH KEYS IN ENVELOPE, OUTPUT TO TEXT FILE */
+
+// Load the API keys that are hidden in the .env file, which is listed in the .gitignore
 require("dotenv").config();
 
+// Retrieve the API keys from the .env
 var keys = require("./keys.js");
 
+// Load the target API
+var Spotify = require('node-spotify-api');
+
+// Define the API call
 var spotify = new Spotify(keys.spotify);
 
-   // prints `34e84d93de6a4650815e5420e0` to the console
-   console.log(process.env.SPOTIFY_ID) 
+// Node.js file system module for outputting the console log to a text file (named myLog)
+var fs = require("fs");
 
-   // prints `5162cd8b5cf940f48702df` to the console
-   console.log(process.env.SPOTIFY_SECRET)
-   // etc.
+// Define (1) which API to call, and (2) what to call for
+function getSomeInput() {
+   console.log("🔍🔍🔍 give me some input 🔎🔎🔎");
+   console.log("tell me where to search using the following: \n🔭concert-this for concert info\n🔭spotify-this-song for song info\n🔭movie-this for movie info\n🔭do-what-it-says for a '😉random😉' search\n");
+   console.log("your search string comes after\noverall, your query has to be like this:\n\n");
+   console.log("node liri.js spotify-this-song ")
+   var whichAPI = process.argv.slice(1,1);
+   var getThis = process.argv.slice(2).join(" ");
+   switchCalls(whichAPI, getThis);
+}
 
-// COMMANDS
+/* SWITCH FOR API CALLS */
+function switchCalls(whichAPI, getThis) {
 
-/*
+   switch(whichAPI) {
+      case 'concert-this':
+         concertThis(getThis);
+      break;
+      case 'spotify-this-song':
+         spotifyThis(getThis);
+      break;
+      case 'movie-this':
+         movieThis(getThis);
+      break;
+      case 'do-what-it-says':
+         doTheDefault();
+      break;
+      default:
+         console.log("\n\n🤔🤔🙃 Not sure what you're trying for. Care to try again? 🤔🤔🙃\n\n");
+         getSomeInput();
+   }
+}
 
-1. `node liri.js concert-this <artist/band name here>`
+/* CONCERT */
+function concertThis(getThis){
 
-   * This will search the Bands in Town Artist Events API (`"https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"`) for an artist and render the following information about each event to the terminal:
+   // replace any spaces in the search string so it parses to the http request
+   var getThis = getThis.split(" ").join("%20");
 
-     * Name of the venue
+   var queryUrl = "https://rest.bandsintown.com/artists/" + getThis + "/events?app_id=codingbootcamp";
+   
+   request(queryUrl, function(err, response, body) {
 
-     * Venue location
+       if (!err && response.statusCode === 200) {
 
-     * Date of the Event (use moment to format this as "MM/DD/YYYY")
+           var concerts = JSON.parse(body);
 
-2. `node liri.js spotify-this-song '<song name here>'`
+           for (var i=0; i<concerts.length; i++) {
 
-   * This will show the following information about the song in your terminal/bash window
+               // parse concert date object to format spec'd in instructions
+               var concertDate = moment(concerts[i].datetime).format('MM/DD/YYYY');
 
-     * Artist(s)
+               // split and put search string back together with spaces
+               var concert = "🎶🎶🎶" + getThis.split("%20").join(" ") + "🎶🎶🎶\n" + concerts[i].venue.name + "\n" + concerts[i].venue.city + "\n" + concertDate + "\n";
 
-     * The song's name
+               // output to console and .txt file
+               console.log(concert);  
+               fs.appendFile("liri_console_log.txt", concert);
+           }
 
-     * A preview link of the song from Spotify
+       } else {
+           console.log('🤔🤔🙃No concert for you (error): ', err);
+       }
 
-     * The album that the song is from
+   });
+}
 
-   * If no song is provided then your program will default to "The Sign" by Ace of Base.
+/* SPOTIFY */
+function spotifyThis(getThis) {
+   spotify
+   .search({
+      type: 'track', 
+      query: getThis 
+   })
+   .then(function(response) {
+      console.log(response);
+      fs.appendFile(myLog, response, function(error) {
+         if (error) {
+            console.log("🙃.txt log fail🙃");
+         } else {
+            console.log("😂.txt log success😂");
+         }
+      });
+   })
+   .catch(function(err) {
+      console.log("🙃error in API call: ", err);
+   });
+}
 
-   * You will utilize the [node-spotify-api](https://www.npmjs.com/package/node-spotify-api) package in order to retrieve song information from the Spotify API.
+/* MOVIE */
+function movieThis(getThis){
 
-   * The Spotify API requires you sign up as a developer to generate the necessary credentials. You can follow these steps in order to generate a **client id** and **client secret**:
+   // if case was movieThis but no movie was spec'd, do Mr. Nobody
+   if (getThis === undefined) {
 
-   * Step One: Visit <https://developer.spotify.com/my-applications/#!/>
+      getThis = "Mr.%20Nobody";
+      var durrMsg = "🙃If you haven't watched 'Mr. Nobody,' then you should: 'http://www.imdb.com/title/tt0485947/' \nIt's on Netflix!🙃";
+      
+      console.log(durrMsg);
+      fs.appendFile("liri_console_log.txt", durrMsg);
+   }
 
-   * Step Two: Either login to your existing Spotify account or create a new one (a free account is fine) and log in.
+   // replace any spaces in the search string so it parses to the http request
+   var getThis = getThis.split(" ").join("%20");
 
-   * Step Three: Once logged in, navigate to <https://developer.spotify.com/my-applications/#!/applications/create> to register a new application to be used with the Spotify API. You can fill in whatever you'd like for these fields. When finished, click the "complete" button.
+   var queryUrl = "http://www.omdbapi.com/?t=" + getThis + "&y=&plot=short&apikey=trilogy";
 
-   * Step Four: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the [node-spotify-api package](https://www.npmjs.com/package/node-spotify-api).
+   request(queryUrl, function(err, response, body) {
 
-3. `node liri.js movie-this '<movie name here>'`
+      if (!err && response.statusCode === 200) {
 
-   * This will output the following information to your terminal/bash window:
+      var movies = JSON.parse(body);
 
-     ```
-       * Title of the movie.
-       * Year the movie came out.
-       * IMDB Rating of the movie.
-       * Rotten Tomatoes Rating of the movie.
-       * Country where the movie was produced.
-       * Language of the movie.
-       * Plot of the movie.
-       * Actors in the movie.
-     ```
+      for (var i=0; i<movies.length; i++) {
 
-   * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody.'
+         // get Rotten Tomatoes rating
+         var rottenRating = movies[i].Ratings.find(function(thing) {
+            return thing.Source === "Rotten Tomatoes";
+         }).Value;
 
-     * If you haven't watched "Mr. Nobody," then you should: <http://www.imdb.com/title/tt0485947/>
+         // split and put search string back together with spaces
+         var movie = "🎞️🎞️🎞️" + getThis.split("%20").join(" ") + "🎞️🎞️🎞️\n" + movies[i].Title + "\n" + movies[i].Year + "\n" + movies[i].imdbRating + "\n" + rottenRating + "\n" + movies[i].Country + "\n" + movies[i].Language + "\n" + movies[i].Plot + "\n" + movies[i].Actors
 
-     * It's on Netflix!
+         // output to console and .txt file
+         console.log(movie);  
+         fs.appendFile("liri_console_log.txt", movie);
+      }
 
-   * You'll use the `axios` package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You may use `trilogy`.
+      } else {
+         console.log('🤔🤔🙃No movie for you (error): ', err);
+      }
 
-4. `node liri.js do-what-it-says`
+   });
+}
 
-   * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
+/* DEFAULT CASE FOR API SWITCH */
+function doTheDefault(durrMsg) {
 
-     * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
+   // get 'random' text from 'random.txt' file (Mr. Nobody)
+   fs.readFile('random.txt', (err, data) => {
+      if (err) throw err;
+      console.log("🙃Error: ", data, "!🙃");
+   });
+   console.log(durrMsg);
+   data = data.split(",");
+   switchCalls(data[0], data[1]);
+}
 
-     * Edit the text in random.txt to test out the feature for movie-this and concert-this.
-
-### BONUS
-
-* In addition to logging the data to your terminal/bash window, output the data to a .txt file called `log.txt`.
-
-* Make sure you append each command you run to the `log.txt` file. 
-
-* Do not overwrite your file each time you run a command. */
+getSomeInput();
