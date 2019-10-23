@@ -1,38 +1,125 @@
-# LIRI-node-app
-LIRI is like iPhone's SIRI. However, while SIRI is a Speech Interpretation and Recognition Interface, LIRI is a _Language_ Interpretation and Recognition Interface. LIRI is a command line node app that takes in parameters and gives you back data.
+# LIRI Bot
 
-## Motivation
-This project was part of the [Rutgers Full Stack Web Development Bootcamp](https://bootcamp.rutgers.edu/coding/landing/?s=Google-Unbranded&pkw=%2Bfullstack&pcrid=389635518223&pmt=b&utm_source=google&utm_medium=cpc&utm_campaign=%5BS%5D_GRD_Coding_NonBrand_All_Specific_Full+Stack_BMM_Somerset&utm_term=%2Bfullstack&utm_content=389635518223&s=google&k=%2Bfullstack&gclsrc=aw.ds&&gclid=Cj0KCQjwi7DtBRCLARIsAGCJWBoFr4aV0dcl1AYbZsAkQQgWBj5HK42KpohYZruTWgk0d7buWI4GLk0aAnDCEALw_wcB) introducing students to application building with Node and the use of external NPM packages.
+## Overview
 
-## Technologies
+LIRI is like iPhone's SIRI; however, while SIRI is a speech interpretation and recognition interface, LIRI is a _language_ interpretation and recognition interface. That is, LIRI is a command line node app that takes in parameters and gives you back data it fetches from APIs. LIRI will search: Spotify for songs; Bands in Town for concerts; and OMDB for movies.
 
-<b>Built with</b>
-- [JavaScript](https://www.javascript.com) is a high-level, interpreted scripting language that conforms to the ECMAScript specification.
-- [Node.js](https://nodejs.org) is a JavaScript runtime built on [Chrome's V8 JavaScript engine](https://v8.dev).
+## Technology
 
-## Features
-What makes your project stand out?
+    * [Node.js](https://nodejs.org)
+    * [Node-Spotify-API](https://www.npmjs.com/package/node-spotify-api)
+    * [Axios](https://www.npmjs.com/package/axios)
+    * [OMDB API](http://www.omdbapi.com)
+    * [Bands In Town API](http://www.artists.bandsintown.com/bandsintown-api)
+    * [Moment](https://www.npmjs.com/package/moment)
+    * [DotEnv](https://www.npmjs.com/package/dotenv)
+   
+## How to Use
 
-## Screenshots & Video
-<iframe src="assets/images/sample_vid.mp4" width="640" height="480"></iframe>
+LIRI is a CLI app that has four possible commands:
 
-## Code Example
-Show what your project does as concisely as possible, developers should be able to figure out **how** your project solves their problem by looking at the code example. Make sure the API you are showing off is obvious, and that your code is short and concise.
+    concert-this
+    spotify-this-song
+    movie-this
+    do-what-it-says
 
-## Installation
-Provide step by step series of examples and explanations about how to get a development env running.
+Initiate by typing:
 
-## How to use?
-If people like your project they’ll want to learn how they can use it. To do so include step by step guide to use your project.
-they would need to supply their own `.env` file for it to work.
+    node liri.js <command> <search string>
 
-## Credits
-Give proper credits. This could be a link to any repo which inspired you to build this project, any blogposts or links to people who contrbuted in this project. 
+Example:
 
-#### Anything else that seems useful
-Spacefiller
+    node liri.js spotify-this-song it's raining men
 
-## License
-A short snippet describing the license (MIT, Apache etc)
+## Video
+<video controls src="sample_vid.mp4" width="640" height="480"></video>
 
-MIT © [Matthew Lorber](https://github.com/matthew-lorber)
+### How to Install
+
+### Instructions
+
+1. You will utilize the [node-spotify-api](https://www.npmjs.com/package/node-spotify-api) package in order to retrieve song information from the Spotify API. The Spotify API requires you sign up as a developer to generate the necessary credentials. You can follow these steps in order to generate a **client id** and **client secret**:
+
+   * Step A: Visit <https://developer.spotify.com/my-applications/#!/>
+
+   * Step B: Either login to your existing Spotify account or create a new one (a free account is fine) and log in.
+
+   * Step C: Once logged in, navigate to <https://developer.spotify.com/my-applications/#!/applications/create> to register a new application to be used with the Spotify API. You can fill in whatever you'd like for these fields. When finished, click the "complete" button.
+
+   * Step D: On the next screen, scroll down to where you see your client id and client secret. Copy these values down somewhere, you'll need them to use the Spotify API and the [node-spotify-api package](https://www.npmjs.com/package/node-spotify-api).
+
+2. Create a file named `.env` in the root directory and add the following text to it, except, replace __your-spotify-id__ and __your-spotify-secret__ with your own keys.
+
+    ```js
+    # Spotify API keys
+
+    SPOTIFY_ID=your-spotify-id
+    SPOTIFY_SECRET=your-spotify-secret
+
+    ```
+
+This file will be used by the `dotenv` package to set what are known as environment variables to the global `process.env` object in node. These are values that are meant to be specific to the computer that node is running on, and since I'm gitignoring this file, my keys (and yours if you clone or fork this to your GitHub) won't be pushed to github &mdash; keeping everyone's API key information private.
+
+## What Each Command Should Do
+
+1. `node liri.js concert-this <artist/band name here>`
+
+   * This will search the Bands in Town Artist Events API (`"https://rest.bandsintown.com/artists/" + artist + "/events?app_id=codingbootcamp"`) for an artist and render the following information about each event to the terminal:
+
+     * Name of the venue
+
+     * Venue location
+
+     * Date of the Event (use moment to format this as "MM/DD/YYYY")
+
+2. `node liri.js spotify-this-song '<song name here>'`
+
+   * This will show the following information about the song in your terminal/bash window
+
+     * Artist(s)
+
+     * The song's name
+
+     * A preview link of the song from Spotify
+
+     * The album that the song is from
+
+   * If no song is provided then your program will default to "I Want it That Way" by the Backstreet Boys (change in random.txt if desired, it was baked into the original assignment at Rutgers).
+
+3. `node liri.js movie-this '<movie name here>'`
+
+   * This will output the following information to your terminal/bash window:
+
+     ```
+       * Title of the movie.
+       * Year the movie came out.
+       * IMDB Rating of the movie.
+       * Rotten Tomatoes Rating of the movie.
+       * Country where the movie was produced.
+       * Language of the movie.
+       * Plot of the movie.
+       * Actors in the movie.
+     ```
+
+   * If the user doesn't type a movie in, the program will output data for the movie 'Mr. Nobody' prepended by the following:
+
+     * If you haven't watched "Mr. Nobody," then you should: <http://www.imdb.com/title/tt0485947/>
+
+     * It's on Netflix!
+
+   * You'll use the `axios` package to retrieve data from the OMDB API. Like all of the in-class activities, the OMDB API requires an API key. You can get a free OMDB API key [here](http://www.omdbapi.com/apikey.aspx?__EVENTTARGET=freeAcct&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=%2FwEPDwUKLTIwNDY4MTIzNQ9kFgYCAQ9kFgICBw8WAh4HVmlzaWJsZWhkAgIPFgIfAGhkAgMPFgIfAGhkGAEFHl9fQ29udHJvbHNSZXF1aXJlUG9zdEJhY2tLZXlfXxYDBQtwYXRyZW9uQWNjdAUIZnJlZUFjY3QFCGZyZWVBY2N0x0euvR%2FzVv1jLU3mGetH4R3kWtYKWACCaYcfoP1IY8g%3D&__VIEWSTATEGENERATOR=5E550F58&__EVENTVALIDATION=%2FwEdAAU5GG7XylwYou%2BzznFv7FbZmSzhXfnlWWVdWIamVouVTzfZJuQDpLVS6HZFWq5fYpioiDjxFjSdCQfbG0SWduXFd8BcWGH1ot0k0SO7CfuulN6vYN8IikxxqwtGWTciOwQ4e4xie4N992dlfbpyqd1D&at=freeAcct&Email=).
+
+4. `node liri.js do-what-it-says`
+
+   * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
+
+     * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
+
+
+## One More Thing
+
+If you have any questions about this project or the material here, please post them in the community channels in StackOverflow so that your fellow developers can help you!
+
+**Good Luck!**
+
+[MIT](https://opensource.org/licenses/MIT) &copy; 2019 Matthew Lorber, M.Ed
