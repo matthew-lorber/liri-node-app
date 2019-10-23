@@ -32,7 +32,7 @@ Example:
     node liri.js spotify-this-song it's raining men
 
 ## Video
-<video controls src="liriBotTest.mp4" width="640" height="480"></video>
+<video controls src="liriBotTest.mp4" width="640" height="480" alt="if you can't see the video here, download the raw (liriBotTest.mp4) from the repo to watch"></video>
 
 ### How to Install
 
